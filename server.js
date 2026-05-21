@@ -13,7 +13,10 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:5173',   // তোমার React Vite port
+  origin: [
+    'http://localhost:5173',
+    'https://your-vercel-app.vercel.app'
+  ],
   credentials: true
 }));
 
@@ -25,6 +28,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/pets', petRoutes);
 app.use('/api/requests', requestRoutes);
 
+// Test Route
 app.get('/', (req, res) => {
   res.send('Pet Adoption Backend is running...');
 });
@@ -32,10 +36,16 @@ app.get('/', (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
-  await connectDB();
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-  });
+  try {
+    await connectDB();
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
+
+  } catch (error) {
+    console.log('❌ Server Error:', error.message);
+  }
 };
 
 startServer();
