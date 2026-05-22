@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import cookieParser from 'cookie-parser';
+import cookieParser from 'cookieParser';
 import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
@@ -11,12 +11,11 @@ dotenv.config();
 
 const app = express();
 
-// ✅ Improved CORS
+// ✅ Fixed & Improved CORS
 app.use(cors({
   origin: [
     'http://localhost:5173',
-    'https://pet-adoption-client-eta.vercel.app',     // ← No trailing slash
-    'https://pet-adoption-client.vercel.app'          // jodi onno domain thake
+    'https://pet-adoption-client-eta.vercel.app'
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
