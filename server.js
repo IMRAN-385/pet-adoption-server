@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import cookieParser from 'cookieParser';
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
@@ -11,12 +11,23 @@ dotenv.config();
 
 const app = express();
 
-// ✅ Fixed & Improved CORS
+// 🔥 Most Reliable CORS for Production
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'https://pet-adoption-client-eta.vercel.app'
-  ],
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'http://localhost:3000',
+      'https://pet-adoption-client-eta.vercel.app',
+      'https://pet-adoption-client.vercel.app'
+    ];
+
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
@@ -31,7 +42,7 @@ app.use('/api/pets', petRoutes);
 app.use('/api/requests', requestRoutes);
 
 app.get('/', (req, res) => {
-  res.send('Pet Adoption Backend is running...');
+  res.send('✅ Pet Adoption Backend is running...');
 });
 
 const PORT = process.env.PORT || 5000;
