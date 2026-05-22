@@ -18,6 +18,7 @@ const cors = require("cors");
 app.use(cors({
   origin: [
     'http://localhost:5173',
+     'https://pet-adoption-client-eta.vercel.app/',
     process.env.CLIENT_URL,
   ].filter(Boolean),
   credentials: true,
