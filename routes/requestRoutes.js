@@ -1,5 +1,5 @@
 import express from 'express';
-import { verifyToken } from '../middleware/verifyToken.js';
+import { verifySession } from '../middleware/verifySession.js';  // ← change
 import {
   submitRequest,
   getMyRequests,
@@ -10,10 +10,10 @@ import {
 
 const router = express.Router();
 
-router.post('/pet/:petId',         verifyToken, submitRequest);
-router.get('/my',                  verifyToken, getMyRequests);
-router.get('/pet/:petId',          verifyToken, getPetRequests);
-router.patch('/:id/status',        verifyToken, updateRequestStatus);
-router.delete('/:id',              verifyToken, cancelRequest);
+router.post('/pet/:petId',  verifySession, submitRequest);
+router.get('/my',           verifySession, getMyRequests);
+router.get('/pet/:petId',   verifySession, getPetRequests);
+router.patch('/:id/status', verifySession, updateRequestStatus);
+router.delete('/:id',       verifySession, cancelRequest);
 
 export default router;

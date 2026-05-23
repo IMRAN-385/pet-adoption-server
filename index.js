@@ -2,8 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
+import { toNodeHandler } from 'better-auth/node';
+import { auth } from './lib/auth.js';
 import connectDB from './config/db.js';
-import authRoutes from './routes/authRoutes.js';
 import petRoutes from './routes/petRoutes.js';
 import requestRoutes from './routes/requestRoutes.js';
 
@@ -11,42 +12,43 @@ dotenv.config();
 
 const app = express();
 
-// 🔥 Best CORS Configuration
+// ✅ CORS — BetterAuth needs credentials: true
 const allowedOrigins = [
-'http://localhost:3000',
-'https://pet-adoption-client-eta.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://pet-adoption-client-eta.vercel.app',
+  'https://pet-adoption-client.vercel.app',
 ];
+
 app.use(
-cors({
-origin: (origin, callback) => {
-if (!origin || allowedOrigins.includes(origin)) {
-callback(null, true);
-} else {
-callback(new Error('Not allowed by CORS'));
-}
-},
-credentials: true,
-})
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  })
 );
 
+// ✅ BetterAuth handler — routes এর আগে, json middleware এর আগে
+// /api/auth/* সব handle করবে BetterAuth নিজেই
+app.all('/api/auth/*splat', toNodeHandler(auth));
+
+// এরপর normal middleware
 app.use(express.json());
 app.use(cookieParser());
 
-// Routes
-app.use('/api/auth', authRoutes);
+// ✅ Custom routes (auth routes আর লাগবে না)
 app.use('/api/pets', petRoutes);
 app.use('/api/requests', requestRoutes);
 
 app.get('/', (req, res) => {
   res.send('✅ Pet Adoption Backend is running...');
-});
-
-app.get('/api/test-cors', (req, res) => {
-  res.json({ 
-    success: true, 
-    message: 'CORS is working!', 
-    origin: req.headers.origin 
-  });
 });
 
 const PORT = process.env.PORT || 5000;
