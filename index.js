@@ -10,22 +10,14 @@ import requestRoutes from './routes/requestRoutes.js';
 
 dotenv.config();
 
-
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:3000',
-  'https://pet-adoption-client-eta.vercel.app',
-  'https://pet-adoption-client.vercel.app',
-  'https://pet-adoption-client-cw7p2th9p-imran-385s-projects.vercel.app', // ← add করো
-];
 const app = express();
 
-// ✅ CORS — BetterAuth needs credentials: true
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
   'https://pet-adoption-client-eta.vercel.app',
   'https://pet-adoption-client.vercel.app',
+  'https://pet-adoption-client-cw7p2th9p-imran-385s-projects.vercel.app',
 ];
 
 app.use(
@@ -43,15 +35,12 @@ app.use(
   })
 );
 
-// ✅ BetterAuth handler — routes এর আগে, json middleware এর আগে
-// /api/auth/* সব handle করবে BetterAuth নিজেই
+// ✅ CORS এর পরে, json এর আগে
 app.all('/api/auth/*splat', toNodeHandler(auth));
 
-// এরপর normal middleware
 app.use(express.json());
 app.use(cookieParser());
 
-// ✅ Custom routes (auth routes আর লাগবে না)
 app.use('/api/pets', petRoutes);
 app.use('/api/requests', requestRoutes);
 
