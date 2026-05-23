@@ -10,6 +10,14 @@ import requestRoutes from './routes/requestRoutes.js';
 
 dotenv.config();
 
+
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://pet-adoption-client-eta.vercel.app',
+  'https://pet-adoption-client.vercel.app',
+  'https://pet-adoption-client-cw7p2th9p-imran-385s-projects.vercel.app', // ← add করো
+];
 const app = express();
 
 // ✅ CORS — BetterAuth needs credentials: true
