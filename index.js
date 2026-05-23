@@ -11,23 +11,10 @@ dotenv.config();
 
 const app = express();
 
-// 🔥 Best CORS Configuration
+// ✅ Clean CORS
 app.use(cors({
-  origin: function (origin, callback) {
-    const allowedOrigins = [
-      'http://localhost:5173',
-      'https://pet-adoption-client-eta.vercel.app'
-    ];
-    
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  origin: true,   // Temporarily allow all for testing
+  credentials: true
 }));
 
 app.use(express.json());
@@ -43,11 +30,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/test-cors', (req, res) => {
-  res.json({ 
-    success: true, 
-    message: 'CORS is working!', 
-    origin: req.headers.origin 
-  });
+  res.json({ message: 'CORS Working ✅' });
 });
 
 const PORT = process.env.PORT || 5000;
