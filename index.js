@@ -18,6 +18,7 @@ const allowedOrigins = [
   'https://pet-adoption-client-eta.vercel.app',
   'https://pet-adoption-client.vercel.app',
   'https://pet-adoption-client-cw7p2th9p-imran-385s-projects.vercel.app',
+  'https://pet-adoption-client-git-main-imran-385s-projects.vercel.app',
 ];
 
 app.use(
@@ -35,7 +36,8 @@ app.use(
   })
 );
 
-app.use('/api/auth', (req, res) => toNodeHandler(auth)(req, res));
+app.all('/api/auth/{*path}', toNodeHandler(auth));
+
 app.use(express.json());
 app.use(cookieParser());
 
