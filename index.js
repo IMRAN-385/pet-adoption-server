@@ -35,9 +35,7 @@ app.use(
   })
 );
 
-// ✅ CORS এর পরে, json এর আগে
-app.all('/api/auth/*splat', toNodeHandler(auth));
-
+app.use('/api/auth', (req, res) => toNodeHandler(auth)(req, res));
 app.use(express.json());
 app.use(cookieParser());
 
