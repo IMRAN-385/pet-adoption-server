@@ -1,5 +1,5 @@
 import express from 'express';
-import { verifyToken } from '../middleware/verifyToken.js';
+import { verifySession } from '../middleware/verifySession.js';
 import {
   getAllPets,
   getMyPets,
@@ -11,13 +11,12 @@ import {
 
 const router = express.Router();
 
-// ⚠️ IMPORTANT: specific routes BEFORE /:id
 router.get('/',            getAllPets);
-router.get('/my-listings', verifyToken, getMyPets);   // এটা /:id এর আগে
+router.get('/my-listings', verifySession, getMyPets);
 router.get('/:id',         getPetById);
 
-router.post('/',    verifyToken, createPet);
-router.put('/:id',  verifyToken, updatePet);
-router.delete('/:id', verifyToken, deletePet);
+router.post('/',      verifySession, createPet);
+router.put('/:id',    verifySession, updatePet);
+router.delete('/:id', verifySession, deletePet);
 
 export default router;
