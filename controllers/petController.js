@@ -1,11 +1,9 @@
-import { ObjectId } from 'mongodb';
+import { isValidObjectId } from 'mongoose';
+import Pet from '../models/Pet.js';
 
-// GET /api/pets — all pets with search, filter, sort
 export const getAllPets = async (req, res) => {
   try {
-    const petsCollection = req.petsCollection;
     const { search, species, sort } = req.query;
-
     let query = { status: 'available' };
 
     if (search) {
@@ -16,7 +14,7 @@ export const getAllPets = async (req, res) => {
     }
 
     if (species && species !== 'All') {
-      query.species = { $in: [species] };
+      query.species = species;
     }
 
     let sortOption = { createdAt: -1 };
@@ -24,32 +22,28 @@ export const getAllPets = async (req, res) => {
     if (sort === 'fee-desc') sortOption = { adoptionFee: -1 };
     if (sort === 'name')     sortOption = { name: 1 };
 
-    const pets = await petsCollection.find(query).sort(sortOption).toArray();
+    const pets = await Pet.find(query).sort(sortOption);
     res.json({ success: true, pets });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// GET /api/pets/my-listings — logged in user's pets
 export const getMyPets = async (req, res) => {
   try {
-    const petsCollection = req.petsCollection;
-    const pets = await petsCollection
-      .find({ ownerEmail: req.user.email })
-      .sort({ createdAt: -1 })
-      .toArray();
+    const pets = await Pet.find({ ownerEmail: req.user.email }).sort({ createdAt: -1 });
     res.json({ success: true, pets });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// GET /api/pets/:id — single pet
 export const getPetById = async (req, res) => {
   try {
-    const petsCollection = req.petsCollection;
-    const pet = await petsCollection.findOne({ _id: new ObjectId(req.params.id) });
+    if (!isValidObjectId(req.params.id))
+      return res.status(400).json({ message: 'Invalid pet ID' });
+
+    const pet = await Pet.findById(req.params.id);
     if (!pet) return res.status(404).json({ message: 'Pet not found' });
     res.json({ success: true, pet });
   } catch (error) {
@@ -57,30 +51,26 @@ export const getPetById = async (req, res) => {
   }
 };
 
-// POST /api/pets — create pet
 export const createPet = async (req, res) => {
   try {
-    const petsCollection = req.petsCollection;
-    const pet = {
+    const pet = await Pet.create({
       ...req.body,
       adoptionFee: Number(req.body.adoptionFee),
       ownerEmail: req.user.email,
       status: 'available',
-      createdAt: new Date(),
-    };
-    const result = await petsCollection.insertOne(pet);
-    res.status(201).json({ success: true, pet: { ...pet, _id: result.insertedId } });
+    });
+    res.status(201).json({ success: true, pet });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// PUT /api/pets/:id — update pet
 export const updatePet = async (req, res) => {
   try {
-    const petsCollection = req.petsCollection;
-    const id = req.params.id;
-    const existing = await petsCollection.findOne({ _id: new ObjectId(id) });
+    if (!isValidObjectId(req.params.id))
+      return res.status(400).json({ message: 'Invalid pet ID' });
+
+    const existing = await Pet.findById(req.params.id);
     if (!existing) return res.status(404).json({ message: 'Pet not found' });
     if (existing.ownerEmail !== req.user.email)
       return res.status(403).json({ message: 'Not authorized' });
@@ -88,28 +78,24 @@ export const updatePet = async (req, res) => {
     const { _id, ...updateData } = req.body;
     if (updateData.adoptionFee) updateData.adoptionFee = Number(updateData.adoptionFee);
 
-    await petsCollection.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: updateData }
-    );
-    const updated = await petsCollection.findOne({ _id: new ObjectId(id) });
+    const updated = await Pet.findByIdAndUpdate(req.params.id, updateData, { new: true });
     res.json({ success: true, pet: updated });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// DELETE /api/pets/:id — delete pet
 export const deletePet = async (req, res) => {
   try {
-    const petsCollection = req.petsCollection;
-    const id = req.params.id;
-    const existing = await petsCollection.findOne({ _id: new ObjectId(id) });
+    if (!isValidObjectId(req.params.id))
+      return res.status(400).json({ message: 'Invalid pet ID' });
+
+    const existing = await Pet.findById(req.params.id);
     if (!existing) return res.status(404).json({ message: 'Pet not found' });
     if (existing.ownerEmail !== req.user.email)
       return res.status(403).json({ message: 'Not authorized' });
 
-    await petsCollection.deleteOne({ _id: new ObjectId(id) });
+    await Pet.findByIdAndDelete(req.params.id);
     res.json({ success: true, message: 'Pet deleted' });
   } catch (error) {
     res.status(500).json({ message: error.message });
