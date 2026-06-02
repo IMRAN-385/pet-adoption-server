@@ -1,5 +1,5 @@
 import express from 'express';
-import { verifySession } from '../middleware/verifySession.js';
+import { verifySession } from '../lib/middleware/verifySession.js';
 import {
   getAllPets,
   getMyPets,
