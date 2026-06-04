@@ -36,6 +36,10 @@ app.use(
   })
 );
 
+app.get('/auth-success', (req, res) => {
+  res.redirect('https://pet-adoption-client-eta.vercel.app/');
+});
+
 app.all('/api/auth/{*path}', toNodeHandler(auth));
 
 app.use(express.json());
