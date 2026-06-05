@@ -14,7 +14,7 @@ export const getAllPets = async (req, res) => {
     }
 
     if (species && species !== 'All') {
-      query.species = species;
+      query.species = { $in: [species] };
     }
 
     let sortOption = { createdAt: -1 };

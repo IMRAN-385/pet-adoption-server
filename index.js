@@ -32,12 +32,16 @@ app.use(
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   })
 );
 
-app.get('/auth-success', (req, res) => {
-  res.redirect('https://pet-adoption-client-eta.vercel.app/');
+app.set('trust proxy', 1);
+
+app.use((req, res, next) => {
+  if (req.headers['x-forwarded-proto']) {
+    req.headers['x-forwarded-proto'] = req.headers['x-forwarded-proto'].split(',')[0].trim();
+  }
+  next();
 });
 
 app.all('/api/auth/{*path}', toNodeHandler(auth));
