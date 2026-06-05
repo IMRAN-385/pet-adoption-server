@@ -13,7 +13,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "@better-auth/infra": "^0.2.12",
+    "@better-auth/infra": "^0.2.11",
     "bcryptjs": "^3.0.3",
     "better-auth": "^1.6.11",
     "cookie-parser": "^1.4.7",
