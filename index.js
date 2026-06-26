@@ -15,7 +15,7 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
-  'https://pet-adoption-client-eta.vercel.app',
+  'https://https://pet-adoption-client-phi-two.vercel.app',
   'https://pet-adoption-client.vercel.app',
   'https://pet-adoption-client-cw7p2th9p-imran-385s-projects.vercel.app',
   'https://pet-adoption-client-git-main-imran-385s-projects.vercel.app',
